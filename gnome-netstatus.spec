@@ -1,22 +1,21 @@
 Summary:	Applet that displays the network status in a GNOME panel
 Summary(pl):	Aplet wy¶wietlaj±cy stan po³±czeñ sieciowych na panelu GNOME
 Name:		gnome-netstatus
-Version:	2.6.2
+Version:	2.8.0
 Release:	1
 License:	GPL
 Group:		X11/Applications
-Source0:	http://ftp.gnome.org/pub/GNOME/sources/%{name}/2.6/%{name}-%{version}.tar.bz2
-# Source0-md5:	f2c6aabd5b1994cfca7efe90ea2c1da9
-Patch0:		%{name}-locale-names.patch
+Source0:	http://ftp.gnome.org/pub/GNOME/sources/%{name}/2.8/%{name}-%{version}.tar.bz2
+# Source0-md5:	fadc8a26ff7142e1372740d2edc435b1
 URL:		http://www.gnome.org/
-BuildRequires:	GConf2-devel >= 2.6.2
+BuildRequires:	GConf2-devel >= 2.8.0.1
 BuildRequires:	autoconf
 BuildRequires:	automake
-BuildRequires:	gnome-common >= 2.4.0
-BuildRequires:	gnome-panel-devel >= 2.6.2
-BuildRequires:	gtk+2-devel >= 2:2.4.3
+BuildRequires:	gnome-common >= 2.8.0
+BuildRequires:	gnome-panel-devel >= 2.8.0
+BuildRequires:	gtk+2-devel >= 2:2.4.4
 BuildRequires:	libglade2-devel >= 1:2.4.0
-BuildRequires:	libgnomeui-devel >= 2.6.1.1
+BuildRequires:	libgnomeui-devel >= 2.8.0
 BuildRequires:	libtool
 BuildRequires:	perl-base
 Requires(post):	GConf2
@@ -31,14 +30,11 @@ Aplet wy¶wietlaj±cy stan po³±czeñ sieciowych na panelu GNOME.
 
 %prep
 %setup -q
-%patch0 -p1
-
-mv po/{no,nb}.po
 
 %build
 gnome-doc-common --copy
 %{__libtoolize}
-%{__aclocal} -I %{_aclocaldir}/gnome2-macros
+%{__aclocal}
 %{__autoconf}
 %{__automake}
 %configure \
@@ -52,6 +48,8 @@ rm -rf $RPM_BUILD_ROOT
 %{__make} install \
 	DESTDIR=$RPM_BUILD_ROOT \
 	GCONF_DISABLE_MAKEFILE_SCHEMA_INSTALL=1
+
+rm -r $RPM_BUILD_ROOT%{_datadir}/locale/no
 
 %find_lang %{name} --with-gnome --all-name
 
