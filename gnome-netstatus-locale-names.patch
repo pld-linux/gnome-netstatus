@@ -5,8 +5,8 @@ diff -urN aa/gnome-netstatus-2.5.92/configure.in gnome-netstatus-2.5.92/configur
  dnl make sure we keep ACLOCAL_FLAGS around for maintainer builds to work
  AC_SUBST(ACLOCAL_AMFLAGS, "$ACLOCAL_FLAGS")
  
--ALL_LINGUAS="ar az bn ca cs cy da de el en_CA en_GB es fi fr ga hi hr hu it ja ko lt mn ms nl nn no pa pl pt pt_BR ro ru sk sq sr sr@Latn sv th tr vi uk wa zh_CN"
-+ALL_LINGUAS="ar az bn ca cs cy da de el en_CA en_GB es fi fr ga hi hr hu it ja ko lt mn ms nb nl nn pa pl pt pt_BR ro ru sk sq sr sr@Latn sv th tr vi uk wa zh_CN"
+-ALL_LINGUAS="ar az bg bn ca cs cy da de el en_CA en_GB es fi fr ga hi hr hu it ja ko lt mn ms nl nn no pa pl pt pt_BR ro ru sk sq sr sr@Latn sv ta th tr vi uk wa zh_CN"
++ALL_LINGUAS="ar az bg bn ca cs cy da de el en_CA en_GB es fi fr ga hi hr hu it ja ko lt mn ms nb nl nn pa pl pt pt_BR ro ru sk sq sr sr@Latn sv ta th tr vi uk wa zh_CN"
  AM_GLIB_GNU_GETTEXT
  
  GNOME_COMPILE_WARNINGS(yes)
