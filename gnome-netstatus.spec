@@ -1,16 +1,16 @@
 Summary:	Applet that displays the network status in a GNOME panel
 Summary(pl):	Aplet wy¶wietlaj±cy stan po³±czeñ sieciowych na panelu GNOME
 Name:		gnome-netstatus
-Version:	0.16
+Version:	2.5.91
 Release:	1
 License:	GPL
 Group:		X11/Applications
-Source0:	http://ftp.gnome.org/pub/GNOME/sources/gnome-netstatus/0.16/%{name}-%{version}.tar.bz2
-# Source0-md5:	50b7e43d2840200ab13fe5fb1b5577ed
+Source0:	http://ftp.gnome.org/pub/GNOME/sources/gnome-netstatus/2.5/%{name}-%{version}.tar.bz2
+# Source0-md5:	f626b0c3cfb247c8200a6b840c116270
 URL:		http://www.gnome.org/
 BuildRequires:	GConf2-devel >= 2.5.0
 BuildRequires:	gnome-panel-devel >= 2.5.0
-BuildRequires:	gtk+2-devel >= 2.3.1
+BuildRequires:	gtk+2-devel >= 2:2.3.5
 BuildRequires:	libglade2-devel >= 2.3.1
 BuildRequires:	libgnomeui-devel >= 2.5.2
 BuildRequires:	perl-base
@@ -58,7 +58,7 @@ rm -rf $RPM_BUILD_ROOT
 %{_libdir}/bonobo/servers/*
 %{_datadir}/%{name}
 %{_datadir}/gnome-2.0/ui/*
-%{_iconsdir}/%{name}
+%{_iconsdir}/*/*/*/*.png
 %{_pixmapsdir}/*
 %{_sysconfdir}/gconf/schemas/*
 %{_omf_dest_dir}/%{name}
