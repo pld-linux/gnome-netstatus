@@ -5,7 +5,7 @@ Version:	0.15
 Release:	1
 License:	GPL
 Group:		X11/Applications
-Source0:	http://ftp.gnome.org/pub/GNOME/sources/gnome-netstatus/0.14/%{name}-%{version}.tar.bz2
+Source0:	http://ftp.gnome.org/pub/GNOME/sources/gnome-netstatus/0.15/%{name}-%{version}.tar.bz2
 # Source0-md5:	a0aa50ab4dfe4372cfb22fe51522ff07
 URL:		http://www.gnome.org/
 BuildRequires:	GConf2-devel >= 2.4.0
