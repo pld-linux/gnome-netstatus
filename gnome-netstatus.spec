@@ -1,18 +1,19 @@
 Summary:	Applet that displays the network status in a GNOME panel
 Summary(pl):	Aplet wy¶wietlaj±cy stan po³±czeñ sieciowych na panelu GNOME
 Name:		gnome-netstatus
-Version:	0.15
+Version:	0.16
 Release:	1
 License:	GPL
 Group:		X11/Applications
-Source0:	http://ftp.gnome.org/pub/GNOME/sources/gnome-netstatus/0.15/%{name}-%{version}.tar.bz2
-# Source0-md5:	a0aa50ab4dfe4372cfb22fe51522ff07
+Source0:	http://ftp.gnome.org/pub/GNOME/sources/gnome-netstatus/0.16/%{name}-%{version}.tar.bz2
+# Source0-md5:	50b7e43d2840200ab13fe5fb1b5577ed
 URL:		http://www.gnome.org/
-BuildRequires:	GConf2-devel >= 2.4.0
-BuildRequires:	gnome-panel-devel >= 2.4.0
+BuildRequires:	GConf2-devel >= 2.5.0
+BuildRequires:	gnome-panel-devel >= 2.5.0
 BuildRequires:	gtk+2-devel >= 2.3.1
-BuildRequires:	libglade2-devel >= 2.0.1
+BuildRequires:	libglade2-devel >= 2.3.1
 BuildRequires:	libgnomeui-devel >= 2.5.2
+BuildRequires:	perl-base
 Requires(post):	GConf2
 Requires(post):	scrollkeeper
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
@@ -36,7 +37,8 @@ Aplet wy¶wietlaj±cy stan po³±czeñ sieciowych na panelu GNOME.
 rm -rf $RPM_BUILD_ROOT
 
 %{__make} install \
-	DESTDIR=$RPM_BUILD_ROOT
+	DESTDIR=$RPM_BUILD_ROOT \
+	GCONF_DISABLE_MAKEFILE_SCHEMA_INSTALL=1
 
 %find_lang %{name} --with-gnome --all-name
 
