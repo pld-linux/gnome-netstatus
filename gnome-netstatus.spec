@@ -1,6 +1,6 @@
-Name:		gnome-netstatus
 Summary:	Applet that displays the network status in a GNOME panel
 Summary(pl):	Aplet pokazuj±cy stan po³±czeñ sieciowych na panelu GNOME
+Name:		gnome-netstatus
 Version:	0.14
 Release:	1
 License:	GPL
@@ -53,5 +53,4 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/gnome-2.0/ui/*
 %{_iconsdir}/%{name}
 %{_pixmapsdir}/*
-
 %{_sysconfdir}/gconf/schemas/*
