@@ -1,18 +1,20 @@
 Summary:	Applet that displays the network status in a GNOME panel
 Summary(pl):	Aplet wy¶wietlaj±cy stan po³±czeñ sieciowych na panelu GNOME
 Name:		gnome-netstatus
-Version:	0.14
+Version:	0.15
 Release:	1
 License:	GPL
 Group:		X11/Applications
 Source0:	http://ftp.gnome.org/pub/GNOME/sources/gnome-netstatus/0.14/%{name}-%{version}.tar.bz2
-# Source0-md5:	9308555ffba2269a0a26b9d402e891c8
+# Source0-md5:	a0aa50ab4dfe4372cfb22fe51522ff07
 URL:		http://www.gnome.org/
+BuildRequires:	GConf2-devel >= 2.4.0
 BuildRequires:	gnome-panel-devel >= 2.4.0
 BuildRequires:	gtk+2-devel >= 2.3.1
 BuildRequires:	libglade2-devel >= 2.0.1
-BuildRequires:	libgnome-devel >= 2.4.0
+BuildRequires:	libgnomeui-devel >= 2.5.2
 Requires(post):	GConf2
+Requires(post):	scrollkeeper
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 %description
@@ -42,7 +44,10 @@ rm -rf $RPM_BUILD_ROOT
 rm -rf $RPM_BUILD_ROOT
 
 %post
+/usr/bin/scrollkeeper-update
 %gconf_schema_install
+
+%postun -p /usr/bin/scrollkeeper-update
 
 %files -f %{name}.lang
 %defattr(644,root,root,755)
@@ -54,3 +59,4 @@ rm -rf $RPM_BUILD_ROOT
 %{_iconsdir}/%{name}
 %{_pixmapsdir}/*
 %{_sysconfdir}/gconf/schemas/*
+%{_omf_dest_dir}/%{name}
