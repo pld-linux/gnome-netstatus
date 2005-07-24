@@ -1,12 +1,12 @@
 Summary:	Applet that displays the network status in a GNOME panel
 Summary(pl):	Aplet wy¶wietlaj±cy stan po³±czeñ sieciowych na panelu GNOME
 Name:		gnome-netstatus
-Version:	2.10.0
-Release:	3
+Version:	2.11.1
+Release:	1
 License:	GPL
 Group:		X11/Applications
-Source0:	http://ftp.gnome.org/pub/GNOME/sources/gnome-netstatus/2.10/%{name}-%{version}.tar.bz2
-# Source0-md5:	b1a044cfbe3299e00d514d966d4766e8
+Source0:	http://ftp.gnome.org/pub/GNOME/sources/gnome-netstatus/2.11/%{name}-%{version}.tar.bz2
+# Source0-md5:	8410f87292f880b673a8e40f701a8019
 URL:		http://www.gnome.org/
 BuildRequires:	GConf2-devel >= 2.10.0
 BuildRequires:	autoconf
@@ -21,6 +21,7 @@ BuildRequires:	libtool
 BuildRequires:	perl-base
 BuildRequires:	pkgconfig
 BuildRequires:	rpmbuild(macros) >= 1.197
+BuildRequires:	scrollkeeper
 Requires(post):	GConf2
 Requires(post):	scrollkeeper
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
@@ -73,10 +74,10 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(644,root,root,755)
 %doc AUTHORS ChangeLog NEWS README TODO
 %attr(755,root,root) %{_libdir}/%{name}-applet
-%{_libdir}/bonobo/servers/*
-%{_datadir}/%{name}
 %{_datadir}/gnome-2.0/ui/*
-%{_iconsdir}/*/*/*/*.png
+%{_datadir}/%{name}
+%{_iconsdir}/hicolor/48x48/apps/*.png
+%{_libdir}/bonobo/servers/*
+%{_omf_dest_dir}/%{name}
 %{_pixmapsdir}/*
 %{_sysconfdir}/gconf/schemas/*
-%{_omf_dest_dir}/%{name}
