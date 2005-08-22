@@ -13,6 +13,7 @@ BuildRequires:	autoconf
 BuildRequires:	automake
 BuildRequires:	gettext-devel
 BuildRequires:	gnome-common >= 2.8.0
+BuildRequires:	gnome-doc-utils >= 0.3.1-2
 BuildRequires:	gnome-panel-devel >= 2.10.0
 BuildRequires:	gtk+2-devel >= 2:2.8.0
 BuildRequires:	libglade2-devel >= 1:2.5.0
@@ -36,15 +37,14 @@ Aplet wy¶wietlaj±cy stan po³±czeñ sieciowych na panelu GNOME.
 %setup -q
 
 %build
+gnome-doc-prepare --copy --force
 %{__gnome_doc_common}
 %{__libtoolize}
 %{__aclocal}
 %{__autoconf}
 %{__automake}
 %configure \
-	--disable-schemas-install \
-	--disable-scrollkeeper
-
+	--disable-schemas-install
 %{__make}
 
 %install
@@ -81,4 +81,4 @@ rm -rf $RPM_BUILD_ROOT
 %{_libdir}/bonobo/servers/*
 %{_omf_dest_dir}/%{name}
 %{_pixmapsdir}/*
-%{_sysconfdir}/gconf/schemas/*
+%{_sysconfdir}/gconf/schemas/netstatus.schemas
