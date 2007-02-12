@@ -1,5 +1,5 @@
 Summary:	Applet that displays the network status in a GNOME panel
-Summary(pl):	Aplet wy¶wietlaj±cy stan po³±czeñ sieciowych na panelu GNOME
+Summary(pl.UTF-8):   Aplet wyÅ›wietlajÄ…cy stan poÅ‚Ä…czeÅ„ sieciowych na panelu GNOME
 Name:		gnome-netstatus
 Version:	2.12.0
 Release:	5
@@ -33,8 +33,8 @@ BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 %description
 Applet that displays the network status in a GNOME panel.
 
-%description -l pl
-Aplet wy¶wietlaj±cy stan po³±czeñ sieciowych na panelu GNOME.
+%description -l pl.UTF-8
+Aplet wyÅ›wietlajÄ…cy stan poÅ‚Ä…czeÅ„ sieciowych na panelu GNOME.
 
 %prep
 %setup -q
