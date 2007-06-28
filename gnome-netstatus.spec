@@ -2,10 +2,12 @@ Summary:	Applet that displays the network status in a GNOME panel
 Summary(pl.UTF-8):	Aplet wyświetlający stan połączeń sieciowych na panelu GNOME
 Name:		gnome-netstatus
 Version:	2.12.1
-Release:	1
+Release:	2
 License:	GPL
 Group:		X11/Applications
 Source0:	http://ftp.gnome.org/pub/GNOME/sources/gnome-netstatus/2.12/%{name}-%{version}.tar.bz2
+#from http://hasbox.com/gnome-netstatus-notification.diff.txt
+Patch0:		%{name}-notification.patch
 # Source0-md5:	8651ca1694a6c222ae5cad6e21814d24
 URL:		http://www.gnome.org/
 BuildRequires:	GConf2-devel >= 2.16.0
@@ -39,6 +41,7 @@ Aplet wyświetlający stan połączeń sieciowych na panelu GNOME.
 
 %prep
 %setup -q
+%patch0 -p1
 
 %build
 gnome-doc-prepare --copy --force
