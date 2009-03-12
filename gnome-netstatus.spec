@@ -1,37 +1,36 @@
 Summary:	Applet that displays the network status in a GNOME panel
 Summary(pl.UTF-8):	Aplet wyświetlający stan połączeń sieciowych na panelu GNOME
 Name:		gnome-netstatus
-Version:	2.12.1
-Release:	3
-License:	GPL
+Version:	2.26.0
+Release:	1
+License:	GPL v2
 Group:		X11/Applications
-Source0:	http://ftp.gnome.org/pub/GNOME/sources/gnome-netstatus/2.12/%{name}-%{version}.tar.bz2
+Source0:	http://ftp.gnome.org/pub/GNOME/sources/gnome-netstatus/2.26/%{name}-%{version}.tar.bz2
+# Source0-md5:	f116157535ec185f0ea7503fafc5edd6
 #from http://hasbox.com/gnome-netstatus-notification.diff.txt
 Patch0:		%{name}-notification.patch
-# Source0-md5:	8651ca1694a6c222ae5cad6e21814d24
 URL:		http://www.gnome.org/
-BuildRequires:	GConf2-devel >= 2.16.0
+BuildRequires:	GConf2-devel >= 2.24.0
 BuildRequires:	autoconf
 BuildRequires:	automake
 BuildRequires:	gettext-devel
-BuildRequires:	gnome-common >= 2.12.0
-BuildRequires:	gnome-doc-utils >= 0.8.0
-BuildRequires:	gnome-panel-devel >= 2.16.3
-BuildRequires:	gtk+2-devel >= 2:2.10.0
+BuildRequires:	gnome-common >= 2.24.0
+BuildRequires:	gnome-doc-utils >= 0.12.0
+BuildRequires:	gnome-panel-devel >= 2.24.0
+BuildRequires:	gtk+2-devel >= 2:2.14.0
 BuildRequires:	intltool >= 0.35.0
-BuildRequires:	libglade2-devel >= 1:2.6.0
-BuildRequires:	libgnomeui-devel >= 2.16.1
+BuildRequires:	libglade2-devel >= 1:2.6.2
 BuildRequires:	libnotify-devel
 BuildRequires:	libtool
 BuildRequires:	perl-base
 BuildRequires:	pkgconfig
+BuildRequires:	rpmbuild(find_lang) >= 1.23
 BuildRequires:	rpmbuild(macros) >= 1.311
 BuildRequires:	scrollkeeper
-Requires(post,preun):	GConf2 >= 2.16.0
 Requires(post,postun):	gtk+2 >= 2:2.10.0
 Requires(post,postun):	hicolor-icon-theme
 Requires(post,postun):	scrollkeeper
-Requires:	libgnomeui >= 2.16.1
+Requires(post,preun):	GConf2 >= 2.24.0
 # sr@Latn vs. sr@latin
 Conflicts:	glibc-misc < 6:2.7
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
@@ -47,8 +46,6 @@ Aplet wyświetlający stan połączeń sieciowych na panelu GNOME.
 %patch0 -p1
 
 %build
-gnome-doc-prepare --copy --force
-%{__gnome_doc_common}
 %{__intltoolize}
 %{__libtoolize}
 %{__aclocal}
@@ -65,9 +62,7 @@ rm -rf $RPM_BUILD_ROOT
 	DESTDIR=$RPM_BUILD_ROOT \
 	GCONF_DISABLE_MAKEFILE_SCHEMA_INSTALL=1
 
-[ -d $RPM_BUILD_ROOT%{_datadir}/locale/sr@latin ] || \
-	mv -f $RPM_BUILD_ROOT%{_datadir}/locale/sr@{Latn,latin}
-%find_lang %{name} --with-gnome --all-name
+%find_lang %{name} --with-gnome --with-omf --all-name
 
 %clean
 rm -rf $RPM_BUILD_ROOT
@@ -88,10 +83,8 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(644,root,root,755)
 %doc AUTHORS ChangeLog NEWS README TODO
 %attr(755,root,root) %{_libdir}/%{name}-applet
-%{_datadir}/gnome-2.0/ui/*
+%{_datadir}/gnome-2.0/ui/GNOME_NetstatusApplet.xml
 %{_datadir}/%{name}
 %{_iconsdir}/hicolor/48x48/apps/*.png
-%{_libdir}/bonobo/servers/*
-%{_omf_dest_dir}/%{name}
-%{_pixmapsdir}/*
+%{_libdir}/bonobo/servers/GNOME_NetstatusApplet_Factory.server
 %{_sysconfdir}/gconf/schemas/netstatus.schemas
