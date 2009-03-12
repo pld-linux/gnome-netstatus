@@ -1,405 +1,160 @@
-*** gnome-netstatus-2.12.0.orig/configure.in	Tue Sep  6 13:22:09 2005
---- gnome-netstatus-2.12.0/configure.in	Sat Nov 25 00:25:01 2006
-***************
-*** 47,53 ****
-  PKG_CHECK_MODULES(NETSTATUS, libgnomeui-2.0 >= 2.5.2
-  			     libglade-2.0 >= 2.0.0
-  			     libpanelapplet-2.0 >= 2.0.0
-! 			     gtk+-2.0 >= 2.3.1)
-  
-  AC_CHECK_HEADERS(sys/sockio.h)
-  
---- 47,54 ----
-  PKG_CHECK_MODULES(NETSTATUS, libgnomeui-2.0 >= 2.5.2
-  			     libglade-2.0 >= 2.0.0
-  			     libpanelapplet-2.0 >= 2.0.0
-! 			     gtk+-2.0 >= 2.3.1
-! 			     libnotify)
-  
-  AC_CHECK_HEADERS(sys/sockio.h)
-  
-*** gnome-netstatus-2.12.0.orig/src/netstatus-applet.c	Thu Jan  6 19:33:15 2005
---- gnome-netstatus-2.12.0/src/netstatus-applet.c	Fri Nov 24 22:01:18 2006
-***************
-*** 480,485 ****
---- 480,488 ----
-    netstatus_iface_set_name (applet->priv->iface, iface_name);
-    g_free (iface_name);
-  
-+   /* Interfaces notification timer */
-+   g_timeout_add (1000, (GSourceFunc) netstatus_ifaces_monitor_start, NULL);
-+ 
-    key = panel_applet_gconf_get_full_key (PANEL_APPLET (applet), "interface");
-    applet->priv->notify_id =
-      gconf_client_notify_add (applet->priv->client,
-*** gnome-netstatus-2.12.0.orig/src/netstatus-iface.c	Mon Mar 14 18:34:06 2005
---- gnome-netstatus-2.12.0/src/netstatus-iface.c	Sun Nov 26 23:36:06 2006
-***************
-*** 50,55 ****
---- 50,56 ----
-  
-  #include "netstatus-sysdeps.h"
-  #include "netstatus-enums.h"
-+ #include "netstatus-util.h"
-  
-  #define NETSTATUS_IFACE_POLL_DELAY       500  /* milliseconds between polls */
-  #define NETSTATUS_IFACE_POLLS_IN_ERROR   10   /* no. of polls in error before increasing delay */
-***************
-*** 134,140 ****
-  			       NetstatusIfaceClass *klass)
-  {
-    iface->priv = g_new0 (NetstatusIfacePrivate, 1);
-!   
-    iface->priv->state = NETSTATUS_STATE_DISCONNECTED;
-  }
-  
---- 135,141 ----
-  			       NetstatusIfaceClass *klass)
-  {
-    iface->priv = g_new0 (NetstatusIfacePrivate, 1);
-! 
-    iface->priv->state = NETSTATUS_STATE_DISCONNECTED;
-  }
-  
-***************
-*** 227,233 ****
-    parent_class->finalize (object);
-  }
-  
-! static void 
-  netstatus_iface_set_property (GObject      *object,
-  			      guint         property_id,
-  			      const GValue *value,
---- 228,234 ----
-    parent_class->finalize (object);
-  }
-  
-! static void
-  netstatus_iface_set_property (GObject      *object,
-  			      guint         property_id,
-  			      const GValue *value,
-***************
-*** 256,262 ****
-  			      GParamSpec *pspec)
-  {
-    NetstatusIface *iface = (NetstatusIface *) object;
-!   
-    switch (property_id)
-      {
-      case PROP_NAME:
---- 257,263 ----
-  			      GParamSpec *pspec)
-  {
-    NetstatusIface *iface = (NetstatusIface *) object;
-! 
-    switch (property_id)
-      {
-      case PROP_NAME:
-***************
-*** 282,290 ****
---- 283,349 ----
-      }
-  }
-  
-+ gboolean
-+ netstatus_ifaces_monitor_start (void) {
-+   static GSList  *iflist;
-+   static guint    ifllen;
-+   NetstatusIface *ifn;
-+   GSList         *il;
-+   GList          *iface_names, *l;
-+ 
-+   /*
-+    * Add interface to our private interface list if it's not already on it.
-+    *
-+    */
-+   iface_names = netstatus_list_interface_names (NULL);
-+   if (ifllen < g_list_length(iface_names)) {
-+    for (l = iface_names; l && l->data && strncmp(l->data, "lo", 2); l = l->next) {
-+ 	if (!g_slist_find_custom(iflist, l->data, (GCompareFunc) strcmp)) {
-+ 		gchar *idata = g_malloc0(IF_NAMESIZE + 18);
-+ 
-+ 		strcpy(idata, l->data);
-+                 iflist = g_slist_append(iflist,	idata);
-+ 	}
-+ 	g_free (l->data);
+diff -urN gnome-netstatus-2.26.0/configure.in gnome-netstatus-2.26.0.new/configure.in
+--- gnome-netstatus-2.26.0/configure.in	2009-03-08 06:44:58.000000000 +0100
++++ gnome-netstatus-2.26.0.new/configure.in	2009-03-12 10:55:22.000000000 +0100
+@@ -46,7 +46,8 @@
+ PKG_CHECK_MODULES(NETSTATUS,
+ 			     libglade-2.0 >= 2.0.0
+ 			     libpanelapplet-2.0 >= 2.0.0
+-			     gtk+-2.0 >= 2.14.0)
++			     gtk+-2.0 >= 2.14.0
++			     libnotify)
+ 
+ AC_CHECK_HEADERS(sys/sockio.h)
+ 
+diff -urN gnome-netstatus-2.26.0/src/netstatus-applet.c gnome-netstatus-2.26.0.new/src/netstatus-applet.c
+--- gnome-netstatus-2.26.0/src/netstatus-applet.c	2009-03-08 06:25:52.000000000 +0100
++++ gnome-netstatus-2.26.0.new/src/netstatus-applet.c	2009-03-12 10:57:12.000000000 +0100
+@@ -464,6 +464,9 @@
+   netstatus_iface_set_name (applet->priv->iface, iface_name);
+   g_free (iface_name);
+ 
++  /* Interfaces notification timer */
++  g_timeout_add (1000, (GSourceFunc) netstatus_ifaces_monitor_start, NULL);
++
+   key = panel_applet_gconf_get_full_key (PANEL_APPLET (applet), "interface");
+   applet->priv->notify_id =
+     gconf_client_notify_add (applet->priv->client,
+diff -urN gnome-netstatus-2.26.0/src/netstatus-iface.c gnome-netstatus-2.26.0.new/src/netstatus-iface.c
+--- gnome-netstatus-2.26.0/src/netstatus-iface.c	2009-03-08 06:25:52.000000000 +0100
++++ gnome-netstatus-2.26.0.new/src/netstatus-iface.c	2009-03-12 11:04:39.000000000 +0100
+@@ -50,6 +50,7 @@
+ 
+ #include "netstatus-sysdeps.h"
+ #include "netstatus-enums.h"
++#include "netstatus-util.h"
+ 
+ #define NETSTATUS_IFACE_POLL_DELAY       500  /* milliseconds between polls */
+ #define NETSTATUS_IFACE_POLLS_IN_ERROR   10   /* no. of polls in error before increasing delay */
+@@ -282,6 +283,71 @@
+     }
+ }
+ 
++gboolean
++netstatus_ifaces_monitor_start (void)
++{
++  static GSList  *iflist;
++  static guint    ifllen;
++  NetstatusIface *ifn;
++  GSList         *il;
++  GList          *iface_names, *l;
++
++  /*
++   * Add interface to our private interface list if it's not already on it.
++   */
++  iface_names = netstatus_list_interface_names (NULL);
++
++  if (ifllen < g_list_length(iface_names))
++    {
++      for (l = iface_names; l && l->data && strncmp(l->data, "lo", 2); l = l->next)
++        {
++          if (!g_slist_find_custom(iflist, l->data, (GCompareFunc) strcmp))
++            {
++              gchar *idata = g_malloc0(IF_NAMESIZE + 18);
++
++              strcpy(idata, l->data);
++              iflist = g_slist_append(iflist, idata);
++            }
++          g_free (l->data);
++        }
 +    }
-+   }
-+   ifllen = g_list_length(iface_names);
-+   g_list_free (iface_names);
-+ 
-+   /* Iterate thru all our private interface list and see if we've changed ip address */
-+   for (il = iflist; il; il = g_slist_next(il)) {
-+ 	gchar *oldipaddr = il->data + IF_NAMESIZE;
-+ 	gchar *curaddr;
-+ 
-+ 	ifn = netstatus_iface_new(il->data);
-+ 	netstatus_iface_get_inet4_details(ifn, &curaddr, NULL, NULL, NULL);
-+ 
-+ 	/*
-+          *  If current IP address is NULL then interface is or has gone down, so
-+          *  we don't notify user.
-+          *
-+          *  If however current IP changes state from down or some other IP to new
-+          *  address then we notify user.
-+ 	 */
-+ 
-+ 	if (curaddr != NULL && (!*oldipaddr || strcmp(oldipaddr, curaddr))) {
-+ 		GString *str = g_string_new (NULL);
-+ 		g_string_printf(str, _("%s is up with IP address %s"), ifn->priv->name, curaddr);
-+ 		netstatus_message(str->str);
-+ 		g_string_free(str, TRUE);
-+ 	}
-+ 	strcpy(oldipaddr, curaddr ? curaddr : "");
-+ 	g_free(curaddr);
-+ 	g_object_unref(ifn);
-+   }
-+   return TRUE;
-+ }
-+ 
-+ 
-  NetstatusIface *
-  netstatus_iface_new (const char *name)
-  {
-+ 
-    return g_object_new (NETSTATUS_TYPE_IFACE,
-  		       "name", name,
-  		       NULL);
-***************
-*** 311,317 ****
-    iface->priv->name = g_strdup (name);
-  
-    netstatus_iface_init_monitor (iface);
-!   
-    g_object_notify (G_OBJECT (iface), "name");
-  }
-  
---- 370,376 ----
-    iface->priv->name = g_strdup (name);
-  
-    netstatus_iface_init_monitor (iface);
-! 
-    g_object_notify (G_OBJECT (iface), "name");
-  }
-  
-***************
-*** 396,402 ****
-  
-        g_error_free (iface->priv->error);
-        iface->priv->error = NULL;
-!      
-        g_object_notify (G_OBJECT (iface), "state");
-        g_object_notify (G_OBJECT (iface), "error");
-      }
---- 455,461 ----
-  
-        g_error_free (iface->priv->error);
-        iface->priv->error = NULL;
-! 
-        g_object_notify (G_OBJECT (iface), "state");
-        g_object_notify (G_OBJECT (iface), "error");
-      }
-***************
-*** 411,417 ****
-    GError  *error;
-    va_list  args;
-    char    *error_message;
-!   
-    va_start (args, format);
-  
-    error_message = g_strdup_vprintf (format, args);
---- 470,476 ----
-    GError  *error;
-    va_list  args;
-    char    *error_message;
-!  
-    va_start (args, format);
-  
-    error_message = g_strdup_vprintf (format, args);
-***************
-*** 471,477 ****
-  					 NETSTATUS_ERROR_STATISTICS,
-  					 error_message);
-        g_free (error_message);
-!       
-        return FALSE;
-      }
-  
---- 530,536 ----
-  					 NETSTATUS_ERROR_STATISTICS,
-  					 error_message);
-        g_free (error_message);
-! 
-        return FALSE;
-      }
-  
-***************
-*** 523,529 ****
-    dprintf (POLLING, "Bytes in: %ld out: %ld. Prev in: %ld out: %ld\n",
-  	   in_bytes, out_bytes,
-  	   iface->priv->stats.in_bytes, iface->priv->stats.out_bytes);
-!   
-    rx = in_packets  > iface->priv->stats.in_packets;
-    tx = out_packets > iface->priv->stats.out_packets;
-  
---- 582,588 ----
-    dprintf (POLLING, "Bytes in: %ld out: %ld. Prev in: %ld out: %ld\n",
-  	   in_bytes, out_bytes,
-  	   iface->priv->stats.in_bytes, iface->priv->stats.out_bytes);
-! 
-    rx = in_packets  > iface->priv->stats.in_packets;
-    tx = out_packets > iface->priv->stats.out_packets;
-  
-***************
-*** 568,574 ****
-  					 NETSTATUS_ERROR_WIRELESS_DETAILS,
-  					 error_message);
-        g_free (error_message);
-!       
-        return FALSE;
-      }
-  
---- 627,633 ----
-  					 NETSTATUS_ERROR_WIRELESS_DETAILS,
-  					 error_message);
-        g_free (error_message);
-! 
-        return FALSE;
-      }
-  
-***************
-*** 617,623 ****
-    NetstatusState state;
-    int            signal_strength;
-    gboolean       is_wireless;
-!  
-    state = netstatus_iface_poll_state (iface);
-  
-    if (iface->priv->state != state &&
---- 676,682 ----
-    NetstatusState state;
-    int            signal_strength;
-    gboolean       is_wireless;
-! 
-    state = netstatus_iface_poll_state (iface);
-  
-    if (iface->priv->state != state &&
-***************
-*** 641,647 ****
-      }
-  
-    netstatus_iface_increase_poll_delay_in_error (iface);
-!   
-    return TRUE;
-  }
-  
---- 700,706 ----
-      }
-  
-    netstatus_iface_increase_poll_delay_in_error (iface);
-! 
-    return TRUE;
-  }
-  
-***************
-*** 706,712 ****
-  		 g_strerror (errno));
-        return FALSE;
-      }
-!   
-    if_req.ifr_addr.sa_family = AF_INET;
-  
-    strncpy (if_req.ifr_name, iface->priv->name, IF_NAMESIZE - 1);
---- 765,771 ----
-  		 g_strerror (errno));
-        return FALSE;
-      }
-! 
-    if_req.ifr_addr.sa_family = AF_INET;
-  
-    strncpy (if_req.ifr_name, iface->priv->name, IF_NAMESIZE - 1);
-***************
-*** 774,785 ****
-    int      i = 0;
-  
-    str = g_string_new ("[");
-!   
-    while (p [i] != 0xc9 && p [i] != 0xff && (i < ASH_ALEN))
-      g_string_append_printf (str, "%1x", p [i++]);
-  
-    g_string_append_c (str, ']');
-!   
-    retval = str->str;
-    g_string_free (str, FALSE);
-  
---- 833,844 ----
-    int      i = 0;
-  
-    str = g_string_new ("[");
-! 
-    while (p [i] != 0xc9 && p [i] != 0xff && (i < ASH_ALEN))
-      g_string_append_printf (str, "%1x", p [i++]);
-  
-    g_string_append_c (str, ']');
-! 
-    retval = str->str;
-    g_string_free (str, FALSE);
-  
-*** gnome-netstatus-2.12.0.orig/src/netstatus-iface.h	Mon Jul  5 21:04:56 2004
---- gnome-netstatus-2.12.0/src/netstatus-iface.h	Fri Nov 24 17:51:05 2006
-***************
-*** 85,90 ****
---- 85,91 ----
-  							      const char     **hw_name,
-  							      char           **hw_addr);
-  gboolean               netstatus_iface_get_is_loopback       (NetstatusIface  *iface);
-+ gboolean               netstatus_ifaces_monitor_start        (void);
-  
-  G_END_DECLS
-  
-*** gnome-netstatus-2.12.0.orig/src/netstatus-util.c	Mon Jul  5 21:04:56 2004
---- gnome-netstatus-2.12.0/src/netstatus-util.c	Mon Nov 27 00:17:37 2006
-***************
-*** 29,34 ****
---- 29,36 ----
-  #include <glib-object.h>
-  #include <libgnome/gnome-i18n.h>
-  #include <string.h>
-+ #include <libnotify/notify.h>
-+ #include <libgnome/gnome-sound.h>
-  
-  #ifdef G_ENABLE_DEBUG
-  NetstatusDebugFlags _netstatus_debug_flags = NETSTATUS_DEBUG_NONE;
-***************
-*** 187,190 ****
---- 189,205 ----
-        return list;
-  
-    return g_list_prepend (list, str);
-+ }
-+ 
-+ void
-+ netstatus_message (char *message)
-+ {
-+   NotifyNotification *n;
-+ 
-+   notify_init("Netstatus");
-+   n = notify_notification_new (_("Network Status"), message, "gnome-netstatus-txrx", NULL);
-+   notify_notification_set_timeout (n, 3000);
-+   gnome_sound_play("/usr/share/sounds/gnibbles/pop.wav");
-+   notify_notification_show (n, NULL);
-+   g_object_unref(G_OBJECT(n));
-  }
-*** gnome-netstatus-2.12.0.orig/src/netstatus-util.h	Fri Jul 30 11:39:00 2004
---- gnome-netstatus-2.12.0/src/netstatus-util.h	Fri Nov 24 21:59:21 2006
-***************
-*** 85,90 ****
---- 85,92 ----
-  							   gpointer        func_data,
-  							   gpointer        alive_object);
-  
-+ void                 netstatus_message			   (char *message);
-+ 
-  #ifdef G_ENABLE_DEBUG
-  
-  #include <stdio.h>
++
++  ifllen = g_list_length(iface_names);
++  g_list_free (iface_names);
++
++  /* Iterate thru all our private interface list and see if we've changed ip address */
++  for (il = iflist; il; il = g_slist_next(il))
++    {
++      gchar *oldipaddr = il->data + IF_NAMESIZE;
++      gchar *curaddr;
++
++      ifn = netstatus_iface_new(il->data);
++      netstatus_iface_get_inet4_details(ifn, &curaddr, NULL, NULL, NULL);
++
++      /*
++         *  If current IP address is NULL then interface is or has gone down, so
++         *  we don't notify user.
++         *
++         *  If however current IP changes state from down or some other IP to new
++         *  address then we notify user.
++       */
++
++      if (curaddr != NULL && (!*oldipaddr || strcmp(oldipaddr, curaddr)))
++        {
++          GString *str = g_string_new (NULL);
++          g_string_printf(str, _("%s is up with IP address %s"), ifn->priv->name, curaddr);
++          netstatus_message(str->str);
++          g_string_free(str, TRUE);
++        }
++
++      strcpy(oldipaddr, curaddr ? curaddr : "");
++      g_free(curaddr);
++      g_object_unref(ifn);
++    }
++
++  return TRUE;
++}
++
+ NetstatusIface *
+ netstatus_iface_new (const char *name)
+ {
+diff -urN gnome-netstatus-2.26.0/src/netstatus-iface.h gnome-netstatus-2.26.0.new/src/netstatus-iface.h
+--- gnome-netstatus-2.26.0/src/netstatus-iface.h	2008-11-26 17:24:56.000000000 +0100
++++ gnome-netstatus-2.26.0.new/src/netstatus-iface.h	2009-03-12 11:04:57.000000000 +0100
+@@ -85,6 +85,7 @@
+ 							      const char     **hw_name,
+ 							      char           **hw_addr);
+ gboolean               netstatus_iface_get_is_loopback       (NetstatusIface  *iface);
++gboolean               netstatus_ifaces_monitor_start        (void);
+ 
+ G_END_DECLS
+ 
+diff -urN gnome-netstatus-2.26.0/src/netstatus-util.c gnome-netstatus-2.26.0.new/src/netstatus-util.c
+--- gnome-netstatus-2.26.0/src/netstatus-util.c	2009-03-08 06:25:52.000000000 +0100
++++ gnome-netstatus-2.26.0.new/src/netstatus-util.c	2009-03-12 11:07:07.000000000 +0100
+@@ -29,6 +29,7 @@
+ #include <glib.h>
+ #include <glib/gi18n.h>
+ #include <string.h>
++#include <libnotify/notify.h>
+ 
+ #ifdef G_ENABLE_DEBUG
+ NetstatusDebugFlags _netstatus_debug_flags = NETSTATUS_DEBUG_NONE;
+@@ -188,3 +189,16 @@
+ 
+   return g_list_prepend (list, str);
+ }
++
++void
++netstatus_message (char *message)
++{
++  NotifyNotification *n;
++
++  notify_init("Netstatus");
++  n = notify_notification_new (_("Network Status"), message, "gnome-netstatus-txrx", NULL);
++  notify_notification_set_timeout (n, 3000);
++  //gnome_sound_play("/usr/share/sounds/gnibbles/pop.wav");
++  notify_notification_show (n, NULL);
++  g_object_unref(G_OBJECT(n));
++}
+diff -urN gnome-netstatus-2.26.0/src/netstatus-util.h gnome-netstatus-2.26.0.new/src/netstatus-util.h
+--- gnome-netstatus-2.26.0/src/netstatus-util.h	2008-11-26 17:24:56.000000000 +0100
++++ gnome-netstatus-2.26.0.new/src/netstatus-util.h	2009-03-12 11:07:49.000000000 +0100
+@@ -85,6 +85,8 @@
+ 							   gpointer        func_data,
+ 							   gpointer        alive_object);
+ 
++void                 netstatus_message                     (char *message);
++
+ #ifdef G_ENABLE_DEBUG
+ 
+ #include <stdio.h>
