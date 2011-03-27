@@ -45,9 +45,6 @@ Aplet wyświetlający stan połączeń sieciowych na panelu GNOME.
 %setup -q
 #%patch0 -p1
 
-%{__sed} -i -e 's/^en@shaw//' po/LINGUAS
-rm -f po/en@shaw.po
-
 %build
 %{__intltoolize}
 %{__libtoolize}
